@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<title>Yogito HTML Editör</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+body {
+    margin: 0;
+    font-family: monospace;
+    background: #1e1e1e;
+    color: white;
+}
+
+header {
+    background: #111;
+    padding: 10px;
+    text-align: center;
+    font-weight: bold;
+}
+
+.top {
+    display: flex;
+    padding: 5px;
+    background: #181818;
+}
+
+input {
+    flex: 1;
+    padding: 8px;
+    background: #000;
+    color: #00ff90;
+    border: none;
+    outline: none;
+}
+
+button {
+    background: #ffcc00;
+    border: none;
+    padding: 8px 12px;
+    font-weight: bold;
+    cursor: pointer;
+    border-radius: 6px;
+    margin-left: 5px;
+}
+
+.container {
+    display: flex;
+    height: calc(100vh - 160px);
+}
+
+textarea {
+    width: 50%;
+    background: #0d0d0d;
+    color: #00ff90;
+    border: none;
+    outline: none;
+    padding: 10px;
+    resize: none;
+}
+
+iframe {
+    width: 50%;
+    border: none;
+    background: white;
+}
+
+.history {
+    background: #111;
+    padding: 10px;
+    height: 90px;
+    overflow-y: auto;
+}
+
+.history div {
+    cursor: pointer;
+    padding: 5px;
+    border-bottom: 1px solid #333;
+}
+
+.history div:hover {
+    background: #222;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+🧪 Yogito HTML Editör | Kaydetmeli 🔥
+</header>
+
+<div class="top">
+<input id="title" placeholder="Başlık gir len (örn: Deneme Site)">
+<button onclick="kaydet()">Kaydet</button>
+<button onclick="indir()">HTML İndir</button>
+</div>
+
+<div class="container">
+<textarea id="code">
+<!DOCTYPE html>
+<html>
+<head>
+<title>Test</title>
+</head>
+<body>
+<h1>Selam Yiğit 😎</h1>
+<p>Bu kaydedilebilir editör</p>
+</body>
+</html>
+</textarea>
+
+<iframe id="preview"></iframe>
+</div>
+
+<div class="history" id="history">
+<b>📜 Geçmiş:</b>
+</div>
+
+<script>
+function calistir() {
+    document.getElementById("preview").srcdoc =
+        document.getElementById("code").value;
+}
+
+function kaydet() {
+    const baslik = document.getElementById("title").value;
+    const kod = document.getElementById("code").value;
+
+    if (!baslik) {
+        alert("Başlık gir lan 😒");
+        return;
+    }
+
+    let liste = JSON.parse(localStorage.getItem("kodlar") || "[]");
+    liste.push({ baslik, kod });
+    localStorage.setItem("kodlar", JSON.stringify(liste));
+    gecmisYukle();
+}
+
+function gecmisYukle() {
+    const history = document.getElementById("history");
+    history.innerHTML = "<b>📜 Geçmiş:</b>";
+
+    let liste = JSON.parse(localStorage.getItem("kodlar") || "[]");
+    liste.forEach((item, i) => {
+        const div = document.createElement("div");
+        div.textContent = item.baslik;
+        div.onclick = () => {
+            document.getElementById("title").value = item.baslik;
+            document.getElementById("code").value = item.kod;
+            calistir();
+        };
+        history.appendChild(div);
+    });
+}
+
+function indir() {
+    const kod = document.getElementById("code").value;
+    const blob = new Blob([kod], { type: "text/html" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "index.html";
+    a.click();
+}
+
+calistir();
+gecmisYukle();
+</script>
+
+</body>
+  </html>
